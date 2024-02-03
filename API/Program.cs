@@ -1,5 +1,11 @@
+using System.Text;
 using API;
+using API.Extentions;
+using API.Interfaces;
+using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var  AngularApp = "AngularApp";
@@ -7,10 +13,9 @@ var  AngularApp = "AngularApp";
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(opt => 
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: AngularApp,
@@ -30,9 +35,11 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseCors(AngularApp);
+
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors(AngularApp);
 
 app.MapControllers();
 

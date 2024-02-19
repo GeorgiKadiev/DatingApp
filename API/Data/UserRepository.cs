@@ -59,9 +59,9 @@ public class UserRepository : IUserRepository
         return await _context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == username);
     }
 
-    public async Task<bool> SaveAllAsync()
+    public async Task<string> GetUserGender(string usernmae)
     {
-        return await _context.SaveChangesAsync() > 0;
+        return await _context.Users.Where(x => x.UserName == usernmae).Select(x => x.Gender).FirstOrDefaultAsync();
     }
 
     public void Update(AppUser user)
